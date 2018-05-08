@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.blkxltng.caip.R;
@@ -21,6 +22,7 @@ public class StreamFragment extends Fragment implements VlcListener {
 
     private VlcVideoLibrary vlcVideoLibrary = null;
     String url;
+    boolean isPlaying = false;
 
     @Nullable
     @Override
@@ -33,7 +35,23 @@ public class StreamFragment extends Fragment implements VlcListener {
         vlcVideoLibrary = new VlcVideoLibrary(getActivity(), this, surfaceView);
         url = args.getString("streamURI");
         Log.d(TAG, "onCreateView: url is " + url);
-        vlcVideoLibrary.play(url);
+//        vlcVideoLibrary.play(url);
+
+        final Button buttonPlay = view.findViewById(R.id.button_play);
+        buttonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isPlaying) {
+                    vlcVideoLibrary.play(url);
+                    buttonPlay.setText("Stop");
+                    isPlaying = !isPlaying;
+                } else {
+                    vlcVideoLibrary.stop();
+                    buttonPlay.setText("Play");
+                    isPlaying = !isPlaying;
+                }
+            }
+        });
 
         return view;
     }

@@ -3,13 +3,13 @@ package com.blkxltng.caip.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.blkxltng.caip.R;
@@ -28,7 +28,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
 
     private static final String TAG = "SignInFragment";
 
-    EditText edittextIP, edittextHTTP, edittextRTSP, edittextUsername, edittextPassword;
+    TextInputEditText edittextIP, edittextHTTP, edittextRTSP, edittextUsername, edittextPassword;
     Button buttonLoadCamera;
     String mUrl = "";
 
@@ -72,6 +72,8 @@ public class SignInFragment extends Fragment implements OnvifListener {
                         currentDevice = new OnvifDevice(IP, username, password);
                         currentDevice.setListener(SignInFragment.this);
                         currentDevice.getServices();
+                    } else {
+                        Toast.makeText(getContext(), "Please input a IP Address, username, and password.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
