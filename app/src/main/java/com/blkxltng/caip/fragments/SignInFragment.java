@@ -1,5 +1,8 @@
 package com.blkxltng.caip.fragments;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.blkxltng.caip.R;
@@ -29,6 +33,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
     private static final String TAG = "SignInFragment";
 
     TextInputEditText edittextIP, edittextHTTP, edittextRTSP, edittextUsername, edittextPassword;
+    ProgressBar loadProgress;
     Button buttonLoadCamera;
     String mUrl = "";
 
@@ -51,30 +56,44 @@ public class SignInFragment extends Fragment implements OnvifListener {
         edittextUsername = view.findViewById(R.id.editText_username);
         edittextPassword = view.findViewById(R.id.editText_password);
 
+        loadProgress = view.findViewById(R.id.progressBar);
+
+
+
         buttonLoadCamera = view.findViewById(R.id.button_loadCamera);
         buttonLoadCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if(currentDevice.isConnected()) {
-                    Log.d(TAG, "onClick: mUrl being sent is " + mUrl);
-                    signInListener.onClickLoadCamera(mUrl);
-                } else {
-                    buttonLoadCamera.setEnabled(false);
-                    String IP = edittextIP.getText().toString();
-                    if(!edittextRTSP.getText().toString().isEmpty()) {
-                        IP += ":" + edittextRTSP.getText().toString();
-                    }
-                    String username = edittextUsername.getText().toString();
-                    String password = edittextPassword.getText().toString();
+                ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                    if(!IP.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
-                        currentDevice = new OnvifDevice(IP, username, password);
-                        currentDevice.setListener(SignInFragment.this);
-                        currentDevice.getServices();
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                final boolean connectedToInternet = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+                if(connectedToInternet) {
+                    if(currentDevice.isConnected()) {
+                        Log.d(TAG, "onClick: mUrl being sent is " + mUrl);
+                        signInListener.onClickLoadCamera(mUrl);
                     } else {
-                        Toast.makeText(getContext(), "Please input a IP Address, username, and password.", Toast.LENGTH_SHORT).show();
+                        buttonLoadCamera.setEnabled(false);
+                        String IP = edittextIP.getText().toString();
+                        if(!edittextRTSP.getText().toString().isEmpty()) {
+                            IP += ":" + edittextRTSP.getText().toString();
+                        }
+                        String username = edittextUsername.getText().toString();
+                        String password = edittextPassword.getText().toString();
+
+                        if(!IP.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
+                            loadProgress.setVisibility(View.VISIBLE);
+                            currentDevice = new OnvifDevice(IP, username, password);
+                            currentDevice.setListener(SignInFragment.this);
+                            currentDevice.getServices();
+                        } else {
+                            Toast.makeText(getContext(), "Please input a IP Address, username, and password.", Toast.LENGTH_SHORT).show();
+                        }
                     }
+                } else {
+                    Toast.makeText(getContext(), "Please connect to the internet to stream a camera", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -98,6 +117,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
             Toast.makeText(getContext(), "Camera loaded", Toast.LENGTH_SHORT).show();
             buttonLoadCamera.setEnabled(true);
             buttonLoadCamera.setText("Play Camera");
+            loadProgress.setVisibility(View.INVISIBLE);
         }
     }
 }
