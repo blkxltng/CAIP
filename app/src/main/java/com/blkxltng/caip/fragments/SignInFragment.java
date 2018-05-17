@@ -16,7 +16,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.blkxltng.caip.CameraInfo;
 import com.blkxltng.caip.R;
+import com.blkxltng.caip.database.CameraReaderDbHelper;
 import com.rvirin.onvif.onvifcamera.OnvifDevice;
 import com.rvirin.onvif.onvifcamera.OnvifListener;
 import com.rvirin.onvif.onvifcamera.OnvifRequest;
@@ -32,17 +34,21 @@ public class SignInFragment extends Fragment implements OnvifListener {
 
     private static final String TAG = "SignInFragment";
 
-    TextInputEditText edittextIP, edittextHTTP, edittextRTSP, edittextUsername, edittextPassword;
+    TextInputEditText edittextNickname, edittextIP, edittextHTTP, edittextRTSP, edittextUsername, edittextPassword;
     ProgressBar loadProgress;
     Button buttonLoadCamera;
     String mUrl = "";
 
     private SignInListener signInListener;
+    private CameraReaderDbHelper mDbHelper;
+    private CameraInfo cameraInfo;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         signInListener = (SignInListener) getActivity();
+        mDbHelper = new CameraReaderDbHelper(getContext());
+        cameraInfo = new CameraInfo();
     }
 
     @Nullable
@@ -50,6 +56,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_sign_in, container, false);
 
+        edittextNickname = view.findViewById(R.id.editText_nickname);
         edittextIP = view.findViewById(R.id.editText_IP);
         edittextHTTP = view.findViewById(R.id.editText_httpPort);
         edittextRTSP = view.findViewById(R.id.editText_rtspPort);
@@ -69,19 +76,38 @@ public class SignInFragment extends Fragment implements OnvifListener {
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
                 final boolean connectedToInternet = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
 
                 if(connectedToInternet) {
                     if(currentDevice.isConnected()) {
+                        if(!mDbHelper.checkForCamera(cameraInfo)) {
+                            mDbHelper.addCamera(cameraInfo);
+                        } else {
+                            Toast.makeText(getContext(), "Camera exists!", Toast.LENGTH_SHORT).show();
+                        }
                         Log.d(TAG, "onClick: mUrl being sent is " + mUrl);
                         signInListener.onClickLoadCamera(mUrl);
                     } else {
+                        cameraInfo = new CameraInfo();
+
                         buttonLoadCamera.setEnabled(false);
+                        String nickname = edittextNickname.getText().toString();
                         String IP = edittextIP.getText().toString();
                         if(!edittextRTSP.getText().toString().isEmpty()) {
                             IP += ":" + edittextRTSP.getText().toString();
+//                            cameraInfo.setRtspPort(edittextRTSP.getText().toString());
                         }
                         String username = edittextUsername.getText().toString();
                         String password = edittextPassword.getText().toString();
+
+                        //Make cameraInfo object
+                        cameraInfo.setName(nickname);
+                        cameraInfo.setIpAddress(IP);
+                        if(!edittextRTSP.getText().toString().isEmpty()) {
+                            cameraInfo.setRtspPort(edittextRTSP.getText().toString());
+                        }
+                        cameraInfo.setUsername(username);
+                        cameraInfo.setPassword(password);
 
                         if(!IP.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
                             loadProgress.setVisibility(View.VISIBLE);

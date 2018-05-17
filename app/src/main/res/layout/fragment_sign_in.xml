@@ -8,23 +8,41 @@
     tools:context=".MainActivity">
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayout_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/editText_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nickname"
+            android:text="Super Dropcam"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout_IP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_nickname">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/editText_IP"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="IP Address"
-            android:text="193.159.244.132"
-            android:inputType="textUri"/>
+            android:inputType="textUri"
+            android:text="193.159.244.132"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
