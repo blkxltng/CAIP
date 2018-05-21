@@ -28,7 +28,7 @@
         tools:text="192.168.2.1"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/item_camera_buttonLoad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -36,26 +36,26 @@
         android:layout_marginTop="8dp"
         android:text="Load"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/item_camera_buttonEdit"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_camera_info"/>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/item_camera_buttonEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:text="Edit"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
+        app:layout_constraintEnd_toStartOf="@+id/item_camera_buttonDelete"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button"
-        app:layout_constraintTop_toTopOf="@+id/button"/>
+        app:layout_constraintStart_toEndOf="@+id/item_camera_buttonLoad"
+        app:layout_constraintTop_toTopOf="@+id/item_camera_buttonLoad"/>
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/item_camera_buttonDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -65,7 +65,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button2"
-        app:layout_constraintTop_toTopOf="@+id/button"/>
+        app:layout_constraintStart_toEndOf="@+id/item_camera_buttonEdit"
+        app:layout_constraintTop_toTopOf="@+id/item_camera_buttonLoad"/>
 
 </android.support.constraint.ConstraintLayout>

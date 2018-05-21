@@ -16,6 +16,8 @@ import java.util.List;
 
 public class CameraReaderDbHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "CameraReaderDbHelper";
+
     //The Android's default system path of your application database.
     public static String DATABASE_PATH = "/data/data/com.blkxltng.caip/databases/";
 
@@ -33,7 +35,8 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
                     CameraEntry.COLUMN_NAME_RTSP + " TEXT," +
                     CameraEntry.COLUMN_NAME_HTTP + " TEXT," +
                     CameraEntry.COLUMN_NAME_USERNAME + " TEXT," +
-                    CameraEntry.COLUMN_NAME_PASSWORD + " TEXT)";
+                    CameraEntry.COLUMN_NAME_PASSWORD + " TEXT," +
+                    CameraEntry.COLUMN_NAME_URL + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + CameraEntry.TABLE_NAME;
@@ -54,52 +57,6 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
 //        onUpgrade(db, oldVersion, newVersion);
     }
 
-//    /***
-//     * Check if the database is exist on device or not
-//     * @return
-//     */
-//    private boolean checkDatabase() {
-//        SQLiteDatabase tempDB = null;
-//        try {
-//            String mPath = DATABASE_PATH + DATABASE_NAME;
-//            tempDB = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.OPEN_READWRITE);
-//        } catch (SQLiteException e) {
-//            Log.e("blkxltng - check", e.getMessage());
-//        }
-//        if (tempDB != null)
-//            tempDB.close();
-//        return tempDB != null ? true : false;
-//    }
-//
-//    /***
-//     * Check if the database doesn't exist on device, create new one
-//     * @throws IOException
-//     */
-//    public void createDatabase() throws SQLException {
-//        boolean dbExist = checkDatabase();
-//
-//        if (dbExist) {
-//            //Do nothing
-//        } else {
-//            getReadableDatabase();
-//            try {
-////                copyDatabase();
-//                mDatabase.execSQL(SQL_CREATE_ENTRIES);
-//            } catch (SQLException e) {
-//                Log.e("blkxltng - create", e.getMessage());
-//            }
-//        }
-//    }
-//
-//    /***
-//     * Open database
-//     * @throws SQLException
-//     */
-//    public void openDatabase() throws SQLException {
-//        String mPath = DATABASE_PATH + DATABASE_NAME;
-//        mDatabase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.OPEN_READWRITE);
-//    }
-
     public void addCamera(CameraInfo cameraInfo) {
 
         // Gets the data repository in write mode
@@ -113,9 +70,22 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
         values.put(CameraEntry.COLUMN_NAME_HTTP, cameraInfo.getHttpPort());
         values.put(CameraEntry.COLUMN_NAME_USERNAME, cameraInfo.getUsername());
         values.put(CameraEntry.COLUMN_NAME_PASSWORD, cameraInfo.getPassword());
+        values.put(CameraEntry.COLUMN_NAME_URL, cameraInfo.getUrl());
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(CameraEntry.TABLE_NAME, null, values);
+    }
+
+    public void deleteCamera(CameraInfo cameraInfo) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Define 'where' part of query.
+        String selection = CameraEntry.COLUMN_NAME_TITLE + " LIKE ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { cameraInfo.getName() };
+        // Issue SQL statement.
+        int deletedRows = db.delete(CameraEntry.TABLE_NAME, selection, selectionArgs);
     }
 
     public List<CameraInfo> getAllCameras() {
@@ -131,7 +101,8 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
                 CameraEntry.COLUMN_NAME_RTSP,
                 CameraEntry.COLUMN_NAME_HTTP,
                 CameraEntry.COLUMN_NAME_USERNAME,
-                CameraEntry.COLUMN_NAME_PASSWORD
+                CameraEntry.COLUMN_NAME_PASSWORD,
+                CameraEntry.COLUMN_NAME_URL
         };
 
         // Filter results WHERE "title" = 'My Title'
@@ -168,6 +139,7 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
                 cameraInfo.setHttpPort(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_HTTP)));
                 cameraInfo.setUsername(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_USERNAME)));
                 cameraInfo.setPassword(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_PASSWORD)));
+                cameraInfo.setUrl(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_URL)));
                 cameraInfoList.add(cameraInfo);
             } while (cursor.moveToNext());
             cursor.close();
@@ -183,20 +155,30 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
 //        String query = "SELECT * FROM " + CameraEntry.TABLE_NAME + " WHERE " + dbfield + " = " + fieldValue;
 //        Cursor cursor = db.rawQuery(query, null);
 
+//        if(cameraInfo.getRtspPort() == "") {
+//            cameraInfo.setRtspPort(null);
+//        }
+//        if(cameraInfo.getHttpPort() == "") {
+//            cameraInfo.setHttpPort(null);
+//        }
+
         // Filter results WHERE "title" = 'My Title'
         String selection = CameraEntry.COLUMN_NAME_IPADDRESS + " = ?";
         String[] selectionArgs;
         if(cameraInfo.getRtspPort() != null) {
-            selection += "AND " + CameraEntry.COLUMN_NAME_RTSP + " = ?";
+            selection += "AND (" + CameraEntry.COLUMN_NAME_RTSP + " = ?)";
             selectionArgs = new String[] {cameraInfo.getIpAddress(), cameraInfo.getRtspPort()};
         } else if(cameraInfo.getHttpPort() != null) {
-            selection += "AND " + CameraEntry.COLUMN_NAME_HTTP + " = ?";
+            selection += "AND (" + CameraEntry.COLUMN_NAME_HTTP + " = ?)";
             selectionArgs = new String[] {cameraInfo.getIpAddress(), cameraInfo.getHttpPort()};
         } else {
             selectionArgs = new String[] {cameraInfo.getIpAddress()};
         }
 
 //        String[] selectionArgs = {cameraInfo.getIpAddress()};
+
+        Log.d(TAG, "checkForCamera: IP=" + cameraInfo.getIpAddress() + ", RTSP=" + cameraInfo.getRtspPort() + ", HTTP=" + cameraInfo.getHttpPort());
+        Log.d(TAG, "checkForCamera: selection=" + selection + ", selectionArgs=" + selectionArgs);
 
         Cursor cursor = db.query(
                 CameraEntry.TABLE_NAME,   // The table to query

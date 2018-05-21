@@ -57,6 +57,14 @@ public class StreamFragment extends Fragment implements VlcListener {
     }
 
     @Override
+    public void onDetach() {
+        if(isPlaying) {
+            vlcVideoLibrary.stop();
+        }
+        super.onDetach();
+    }
+
+    @Override
     public void onComplete() {
         Toast.makeText(getContext(), "Playing", Toast.LENGTH_SHORT).show();
 //        vlcVideoLibrary.play(url);

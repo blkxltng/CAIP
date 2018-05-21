@@ -17,5 +17,6 @@ public final class CameraReaderContract {
         public static final String COLUMN_NAME_HTTP = "http";
         public static final String COLUMN_NAME_USERNAME = "username";
         public static final String COLUMN_NAME_PASSWORD = "password";
+        public static final String COLUMN_NAME_URL = "url";
     }
 }

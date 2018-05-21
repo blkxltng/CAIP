@@ -10,10 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        //For BlurKit
-        renderscriptTargetApi 27
-        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
@@ -35,7 +31,6 @@ dependencies {
     implementation 'com.rvirin.onvif:onvifcamera:1.1.8'
     implementation 'com.github.pedroSG94.vlc-example-streamplayer:pedrovlc:2.5.14'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'com.wonderkiln:blurkit:1.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:recyclerview-v7:27.1.1'
 }
