@@ -75,4 +75,6 @@ public class StreamFragment extends Fragment implements VlcListener {
         Toast.makeText(getContext(), "Error, make sure your endpoint is correct", Toast.LENGTH_SHORT).show();
         vlcVideoLibrary.stop();
     }
+
+
 }

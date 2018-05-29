@@ -36,7 +36,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
 
     TextInputEditText edittextNickname, edittextIP, edittextHTTP, edittextRTSP, edittextUsername, edittextPassword;
     ProgressBar loadProgress;
-    Button buttonLoadCamera;
+    Button buttonLoadCamera, buttonCancel;
     String mUrl = "";
 
     private SignInListener signInListener;
@@ -66,7 +66,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
         loadProgress = view.findViewById(R.id.progressBar);
 
 
-
+        buttonCancel = view.findViewById(R.id.button_cancel);
         buttonLoadCamera = view.findViewById(R.id.button_loadCamera);
         buttonLoadCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +114,13 @@ public class SignInFragment extends Fragment implements OnvifListener {
                 } else {
                     Toast.makeText(getContext(), "Please connect to the internet to stream a camera", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
 

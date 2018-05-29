@@ -206,6 +206,8 @@ public class HomeFragment extends Fragment implements OnvifListener {
             buttonEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    final CameraInfo cameraInfo = mCameraInfoList.get(getAdapterPosition());
+                    selectedCameraInfo = cameraInfo;
 
                 }
             });
