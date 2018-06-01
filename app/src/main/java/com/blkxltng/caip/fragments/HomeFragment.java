@@ -2,6 +2,7 @@ package com.blkxltng.caip.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blkxltng.caip.BuildConfig;
 import com.blkxltng.caip.CameraInfo;
 import com.blkxltng.caip.R;
 import com.blkxltng.caip.database.CameraReaderDbHelper;
@@ -31,6 +33,7 @@ import com.rvirin.onvif.onvifcamera.OnvifResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.rvirin.onvif.onvifcamera.OnvifDeviceKt.currentDevice;
 
 public class HomeFragment extends Fragment implements OnvifListener {
@@ -43,6 +46,7 @@ public class HomeFragment extends Fragment implements OnvifListener {
         void onClickListLoadCamera(String url);
         void onClickEditCamera();
         void onClickDeleteCamera();
+        void onClickedAddSecurity();
     }
 
     private static final String TAG = "HomeFragment";
@@ -64,6 +68,8 @@ public class HomeFragment extends Fragment implements OnvifListener {
         addCameraListener = (AddCameraListener) getActivity();
         cameraListButtonClickListener = (CameraListButtonClickListener) getActivity();
         mDbHelper = new CameraReaderDbHelper(getContext());
+
+//        checkFirstRun();
     }
 
     @Nullable
@@ -305,5 +311,101 @@ public class HomeFragment extends Fragment implements OnvifListener {
 //            return builder.create();
 //        }
 //    }
+
+
+    //Use this to check if this is the first time the user is running the app. If so, do some
+    //introductory stuff
+    private void checkFirstRun() {
+
+        final String PREFS_NAME = "CAIP_prefs";
+        final String PREF_VERSION_CODE_KEY = "version_code";
+        final String PREF_SECURITY_PIN_KEY = "security_pin";
+        final int DOESNT_EXIST = -1;
+
+        // Get current version code
+        int currentVersionCode = BuildConfig.VERSION_CODE;
+
+        // Get saved version code
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+
+        // Check for first run or upgrade
+        if (currentVersionCode == savedVersionCode) {
+
+            // This is just a normal run
+            Toast.makeText(getContext(), "This is a regular run", Toast.LENGTH_SHORT).show();
+            return;
+
+        } else if (savedVersionCode == DOESNT_EXIST) {
+
+            // TODO This is a new install (or the user cleared the shared preferences)
+
+            Toast.makeText(getContext(), "This is the first run", Toast.LENGTH_SHORT).show();
+
+
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+            alertDialog.setTitle("Welcome to CAIP!");
+            alertDialog.setMessage("Would you like to a PIN or fingerprint?");
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Add",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            //Do Stuff
+
+                            cameraListButtonClickListener.onClickedAddSecurity();
+
+//                            PFLockScreenFragment fragment = new PFLockScreenFragment();
+//                            PFFLockScreenConfiguration.Builder builder = new PFFLockScreenConfiguration.Builder(getContext())
+//                                    .setTitle("Input PIN code")
+//                                    .setMode(PFFLockScreenConfiguration.MODE_CREATE);
+//                            fragment.setConfiguration(builder.build());
+//                            fragment.setCodeCreateListener(new PFLockScreenFragment.OnPFLockScreenCodeCreateListener() {
+//                                @Override
+//                                public void onCodeCreated(String encodedCode) {
+//                                    //TODO: save somewhere;
+//                                    SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+//                                    preferences.edit().putString(PREF_SECURITY_PIN_KEY, encodedCode).apply();
+//                                    getActivity().getSupportFragmentManager().popBackStack();
+//                                }
+//                            });
+//                            //TODO: show fragment;
+//
+//                            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+//                            fragmentTransaction.replace(R.id.fragment_container, fragment);
+//                            fragmentTransaction.addToBackStack("");
+//                            fragmentTransaction.commit();
+
+                            dialogInterface.dismiss();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+
+                    AlertDialog confirmDialog = new AlertDialog.Builder(getContext()).create();
+                    confirmDialog.setTitle("Welcome to CAIP!");
+                    confirmDialog.setMessage("That's cool, you can always add one later from the settings!");
+                    confirmDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialogInterface, int which) {
+                                    //Do Stuff
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                    confirmDialog.show();
+                }
+            });
+            alertDialog.show();
+
+
+
+        } else if (currentVersionCode > savedVersionCode) {
+
+            // TODO This is an upgrade
+        }
+
+        // Update the shared preferences with the current version code
+        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+    }
 
 }
