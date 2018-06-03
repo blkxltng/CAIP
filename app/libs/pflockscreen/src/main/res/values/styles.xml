@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PFLockScreenStyle">
+        <item name="android:background">@drawable/background_pf</item>
+    </style>
+
+    <style name="PFLockScreenButtonStyle" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/touch_selector_pf</item>
+    </style>
+
+    <style name="PFLockScreenFingerPrintButtonStyle">
+        <item name="android:src">@drawable/fingerprint_lockscreen_pf</item>
+        <item name="android:padding">20dp</item>
+    </style>
+
+    <style name="PFLockScreenDeleteButtonStyle">
+        <item name="android:src">@drawable/delete_lockscreen_pf</item>
+        <item name="android:padding">20dp</item>
+    </style>
+
+
+    <style name="PFCheckBox">
+        <item name="android:checkboxStyle">@style/PFLockScreenCodeStyle</item>
+    </style>
+    <style name="PFLockScreenCodeStyle">
+        <item name="android:button">@drawable/code_selector_pf</item>
+    </style>
+
+
+
+</resources>

@@ -1,12 +1,14 @@
 package com.blkxltng.caip;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,6 +34,19 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
         super.onCreate(savedInstanceState);
 
         checkFirstRun();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                //Start settings activity
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -143,7 +158,7 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
             }
 
             if(pinExist) {
-                PFLockScreenFragment lockScreenFragment = new PFLockScreenFragment();
+                final PFLockScreenFragment lockScreenFragment = new PFLockScreenFragment();
                 PFFLockScreenConfiguration.Builder builder = new PFFLockScreenConfiguration.Builder(this)
                         .setTitle("Unlock")
                         .setMode(PFFLockScreenConfiguration.MODE_AUTH)
