@@ -98,6 +98,20 @@ public class PFCodeView extends LinearLayout {
         return mCode.length();
     }
 
+    //Added to test
+    public int clear() {
+        while(mCode.length() > 0) {
+            mCode = mCode.substring(0, mCode.length() - 1);
+        }
+//        if(mCode.length() == 0) {
+//            return mCode.length();
+//        }
+        for(int i = 0; i < mCodeLength; i++) {
+            mCodeViews.get(i).toggle();
+        }
+        return mCode.length();
+    }
+
 
     public int getInputCodeLength() {
         return mCode.length();

@@ -411,7 +411,9 @@ public class PFLockScreenFragment extends Fragment {
 
     }
 
-
+    public PFCodeView getCodeView() {
+        return mCodeView;
+    }
 }
 
 

@@ -188,6 +188,7 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
                     @Override
                     public void onPinLoginFailed() {
                         Toast.makeText(getApplicationContext(), "Wrong PIN!", Toast.LENGTH_SHORT).show();
+                        lockScreenFragment.getCodeView().clear();
                     }
 
                     @Override
