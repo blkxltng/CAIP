@@ -72,12 +72,12 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        PFFLockScreenConfiguration.Builder builder;
-        FragmentTransaction fragmentTransaction;
+//        PFFLockScreenConfiguration.Builder builder;
+//        FragmentTransaction fragmentTransaction;
         switch (item.getItemId()) {
             case R.id.add_pin:
                 PFLockScreenFragment fragment = new PFLockScreenFragment();
-                builder = new PFFLockScreenConfiguration.Builder(MainActivity.this)
+                PFFLockScreenConfiguration.Builder builder = new PFFLockScreenConfiguration.Builder(MainActivity.this)
                         .setTitle("Input new PIN code")
                         .setMode(PFFLockScreenConfiguration.MODE_CREATE);
                 fragment.setConfiguration(builder.build());
@@ -93,80 +93,97 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
 
                     }
                 });
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, fragment);
                 fragmentTransaction.addToBackStack("");
                 fragmentTransaction.commit();
                 return true;
             case R.id.delete_pin:
-                final PFLockScreenFragment lockScreenFragment = new PFLockScreenFragment();
-                builder = new PFFLockScreenConfiguration.Builder(this)
-                        .setTitle("Input PIN to remove lock");
-                // Check if we're running on Android 6.0 (M) or higher
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    //Fingerprint API only available on from Android 6.0 (M)
-                    FingerprintManager fingerprintManager = (FingerprintManager) getApplication().getSystemService(Context.FINGERPRINT_SERVICE);
-                    if (!fingerprintManager.isHardwareDetected()) {
-                        // Device doesn't support fingerprint authentication
-                    } else if (!fingerprintManager.hasEnrolledFingerprints()) {
-                        // User hasn't enrolled any fingerprints to authenticate with
-                    } else {
-                        // Everything is ready for fingerprint authentication
-                        builder.setTitle("Input PIN or scan fingerprint to remove lock").setUseFingerprint(true);
-                    }
-                }
+                Log.d(TAG, "onOptionsItemSelected: delete pin clicked");
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Delete PIN?");
+                alertDialog.setMessage("Are you sure you want to remove the lock?");
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        final PFLockScreenFragment lockScreenFragment = new PFLockScreenFragment();
+                        PFFLockScreenConfiguration.Builder builder = new PFFLockScreenConfiguration.Builder(getApplicationContext())
+                                .setTitle("Input PIN to remove lock");
+                        // Check if we're running on Android 6.0 (M) or higher
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            //Fingerprint API only available on from Android 6.0 (M)
+                            FingerprintManager fingerprintManager = (FingerprintManager) getApplication().getSystemService(Context.FINGERPRINT_SERVICE);
+                            if (!fingerprintManager.isHardwareDetected()) {
+                                // Device doesn't support fingerprint authentication
+                            } else if (!fingerprintManager.hasEnrolledFingerprints()) {
+                                // User hasn't enrolled any fingerprints to authenticate with
+                            } else {
+                                // Everything is ready for fingerprint authentication
+                                builder.setTitle("Input PIN or scan fingerprint to remove lock").setUseFingerprint(true);
+                            }
+                        }
                         builder.setMode(PFFLockScreenConfiguration.MODE_AUTH)
 //                        .setCodeLength(4)
-                        .setLeftButton("Forgot PIN?",
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
+                                .setLeftButton("Forgot PIN?",
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                //Todo here too
+                                            }
+                                        });
+                        lockScreenFragment.setConfiguration(builder.build());
+                        lockScreenFragment.setEncodedPinCode(PreferenceSettings.getCode(getApplicationContext()));
+                        lockScreenFragment.setLoginListener(new PFLockScreenFragment.OnPFLockScreenLoginListener() {
+                            @Override
+                            public void onCodeInputSuccessful() {
+                                try {
+                                    PFFingerprintPinCodeHelper.getInstance().delete();
+                                } catch (PFSecurityException e) {
+                                    e.printStackTrace();
+                                }
+                                getSupportFragmentManager().popBackStack();
+                                invalidateOptionsMenu();
+                                Toast.makeText(getApplicationContext(), "Lock removed", Toast.LENGTH_SHORT).show();
+                            }
 
-                                    }
-                                });
-                lockScreenFragment.setConfiguration(builder.build());
-                lockScreenFragment.setEncodedPinCode(PreferenceSettings.getCode(this));
-                lockScreenFragment.setLoginListener(new PFLockScreenFragment.OnPFLockScreenLoginListener() {
-                    @Override
-                    public void onCodeInputSuccessful() {
-                        try {
-                            PFFingerprintPinCodeHelper.getInstance().delete();
-                        } catch (PFSecurityException e) {
-                            e.printStackTrace();
-                        }
-                        getSupportFragmentManager().popBackStack();
-                        invalidateOptionsMenu();
-                        Toast.makeText(getApplicationContext(), "Lock removed", Toast.LENGTH_SHORT).show();
-                    }
+                            @Override
+                            public void onFingerprintSuccessful() {
+                                try {
+                                    PFFingerprintPinCodeHelper.getInstance().delete();
+                                } catch (PFSecurityException e) {
+                                    e.printStackTrace();
+                                }
+                                getSupportFragmentManager().popBackStack();
+                                invalidateOptionsMenu();
+                                Toast.makeText(getApplicationContext(), "Lock removed", Toast.LENGTH_SHORT).show();
+                            }
 
-                    @Override
-                    public void onFingerprintSuccessful() {
-                        try {
-                            PFFingerprintPinCodeHelper.getInstance().delete();
-                        } catch (PFSecurityException e) {
-                            e.printStackTrace();
-                        }
-                        getSupportFragmentManager().popBackStack();
-                        invalidateOptionsMenu();
-                        Toast.makeText(getApplicationContext(), "Lock removed", Toast.LENGTH_SHORT).show();
-                    }
+                            @Override
+                            public void onPinLoginFailed() {
+                                Toast.makeText(getApplicationContext(), "Wrong PIN!", Toast.LENGTH_SHORT).show();
+                                lockScreenFragment.getCodeView().clear();
+                            }
 
-                    @Override
-                    public void onPinLoginFailed() {
-                        Toast.makeText(getApplicationContext(), "Wrong PIN!", Toast.LENGTH_SHORT).show();
-                        lockScreenFragment.getCodeView().clear();
-                    }
+                            @Override
+                            public void onFingerprintLoginFailed() {
+                                Toast.makeText(getApplicationContext(), "Wrong fingerprint. Please try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-                    @Override
-                    public void onFingerprintLoginFailed() {
-                        Toast.makeText(getApplicationContext(), "Wrong fingerprint. Please try again.", Toast.LENGTH_SHORT).show();
+                        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment_container, lockScreenFragment);
+                        fragmentTransaction.addToBackStack("");
+                        fragmentTransaction.commit();
+//                        alertDialog.dismiss();
                     }
                 });
-
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, lockScreenFragment);
-                fragmentTransaction.addToBackStack("");
-                fragmentTransaction.commit();
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        alertDialog.dismiss();
+                    }
+                });
+                alertDialog.show();
                 return true;
             case R.id.settings:
                 //Start settings activity
@@ -283,7 +300,7 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-
+                                        //TODO Make the user delete everything to get access
                                     }
                                 });
                 lockScreenFragment.setConfiguration(builder.build());
