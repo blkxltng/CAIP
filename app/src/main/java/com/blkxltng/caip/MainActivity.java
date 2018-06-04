@@ -2,7 +2,6 @@ package com.blkxltng.caip;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
@@ -184,11 +183,6 @@ public class MainActivity extends SingleFragmentActivity implements SignInFragme
                     }
                 });
                 alertDialog.show();
-                return true;
-            case R.id.settings:
-                //Start settings activity
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivityForResult(intent, 1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
