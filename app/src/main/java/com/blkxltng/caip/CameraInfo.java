@@ -10,6 +10,7 @@ public class CameraInfo {
     private String username;
     private String password;
     private String url;
+    private String deviceInfo;
 
     public int getId() {
         return id;
@@ -73,5 +74,13 @@ public class CameraInfo {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public void setDeviceInfo(String deviceInfo) {
+        this.deviceInfo = deviceInfo;
     }
 }

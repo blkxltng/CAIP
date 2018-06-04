@@ -4,5 +4,14 @@
 
     <item
         android:id="@+id/settings"
-        android:title="Settings"/>
+        android:title="Settings"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/add_pin"
+        android:title="@string/pref_title_add_pin"/>
+
+    <item
+        android:id="@+id/delete_pin"
+        android:title="@string/pref_title_delete_pin"/>
 </menu>

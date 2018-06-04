@@ -5,8 +5,6 @@ import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
 
 /**
  * Created by firej on 8/30/2017.
@@ -33,12 +31,5 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             fragment  = createFragment();
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
-        return true;
     }
 }

@@ -6,6 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="pf_lock_screen">@style/MyLockScreenStyle</item>
+    </style>
+
+    <style name="MyLockScreenStyle">
+        <item name="android:background">@drawable/lockscreen_background</item>
     </style>
 
 </resources>

@@ -36,7 +36,8 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
                     CameraEntry.COLUMN_NAME_HTTP + " TEXT," +
                     CameraEntry.COLUMN_NAME_USERNAME + " TEXT," +
                     CameraEntry.COLUMN_NAME_PASSWORD + " TEXT," +
-                    CameraEntry.COLUMN_NAME_URL + " TEXT)";
+                    CameraEntry.COLUMN_NAME_URL + " TEXT," +
+                    CameraEntry.COLUMN_NAME_INFO + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + CameraEntry.TABLE_NAME;
@@ -71,6 +72,7 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
         values.put(CameraEntry.COLUMN_NAME_USERNAME, cameraInfo.getUsername());
         values.put(CameraEntry.COLUMN_NAME_PASSWORD, cameraInfo.getPassword());
         values.put(CameraEntry.COLUMN_NAME_URL, cameraInfo.getUrl());
+        values.put(CameraEntry.COLUMN_NAME_INFO, cameraInfo.getDeviceInfo());
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(CameraEntry.TABLE_NAME, null, values);
@@ -102,7 +104,8 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
                 CameraEntry.COLUMN_NAME_HTTP,
                 CameraEntry.COLUMN_NAME_USERNAME,
                 CameraEntry.COLUMN_NAME_PASSWORD,
-                CameraEntry.COLUMN_NAME_URL
+                CameraEntry.COLUMN_NAME_URL,
+                CameraEntry.COLUMN_NAME_INFO
         };
 
         // Filter results WHERE "title" = 'My Title'
@@ -140,6 +143,7 @@ public class CameraReaderDbHelper extends SQLiteOpenHelper {
                 cameraInfo.setUsername(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_USERNAME)));
                 cameraInfo.setPassword(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_PASSWORD)));
                 cameraInfo.setUrl(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_URL)));
+                cameraInfo.setDeviceInfo(cursor.getString(cursor.getColumnIndex(CameraEntry.COLUMN_NAME_INFO)));
                 cameraInfoList.add(cameraInfo);
             } while (cursor.moveToNext());
             cursor.close();

@@ -4,6 +4,17 @@
 
     <!-- Strings related to Settings -->
 
+    <!-- Security settings -->
+    <string name="pref_header_security">Security</string>
+
+    <string name="pref_title_add_pin">Add PIN</string>
+    <string name="pref_title_change_pin">Change PIN</string>
+    <string name="pref_title_delete_pin">Delete PIN</string>
+
+    <string name="pref_key_add_pin">add_pin</string>
+    <string name="pref_key_change_pin">change_pin</string>
+    <string name="pref_key_delete_pin">delete_pin</string>
+
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
@@ -64,13 +75,4 @@
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
 </resources>

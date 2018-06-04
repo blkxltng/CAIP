@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,12 +44,33 @@ public class SignInFragment extends Fragment implements OnvifListener {
     private CameraReaderDbHelper mDbHelper;
     private CameraInfo cameraInfo;
 
+    private int argId;
+    private String argName;
+    private String argIp;
+    private String argUsername;
+    private String argPassword;
+    private boolean argumentsRead;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         signInListener = (SignInListener) getActivity();
         mDbHelper = new CameraReaderDbHelper(getContext());
         cameraInfo = new CameraInfo();
+
+//        argumentsRead = false;
+//
+//        if(!argumentsRead){
+//            //Get Arguments
+//            argId = getArguments().getInt("id");
+//            argName = getArguments().getString("nickname");
+//            argIp = getArguments().getString("ipAddress");
+//            argUsername = getArguments().getString("username");
+//            argPassword = getArguments().getString("password");
+//            if(argIp != null && !argIp.equals("")) {
+//                argumentsRead = true;
+//            }
+//        }
     }
 
     @Nullable
@@ -62,6 +84,14 @@ public class SignInFragment extends Fragment implements OnvifListener {
         edittextRTSP = view.findViewById(R.id.editText_rtspPort);
         edittextUsername = view.findViewById(R.id.editText_username);
         edittextPassword = view.findViewById(R.id.editText_password);
+
+//        edittextRTSP.setVisibility(View.GONE);
+//        edittextHTTP.setVisibility(View.GONE);
+
+        TextInputLayout rtspInputLayout = view.findViewById(R.id.textInputLayout_rtsp);
+        TextInputLayout httpInputLayout = view.findViewById(R.id.textInputLayout_http);
+        rtspInputLayout.setVisibility(View.GONE);
+        httpInputLayout.setVisibility(View.GONE);
 
         loadProgress = view.findViewById(R.id.progressBar);
 
@@ -129,11 +159,21 @@ public class SignInFragment extends Fragment implements OnvifListener {
 
     @Override
     public void requestPerformed(OnvifResponse response) {
+
+        if (!response.getSuccess()) {
+            Log.e("ERROR", "request failed: " + response.getRequest().getType() +
+                    " \n Response: " + response.getError());
+            Toast.makeText(getContext(), "Request failed: " + response.getRequest().getType(), Toast.LENGTH_SHORT).show();
+            loadProgress.setVisibility(View.INVISIBLE);
+            buttonLoadCamera.setEnabled(true);
+        }
+
         Log.d("ONVIF","Request " + response.getRequest().getType() + " performed.");
         Log.d("ONVIF","Succeeded: " + response.getSuccess() + "\nmessage:" + response.getParsingUIMessage());
         if (response.getRequest().getType() == OnvifRequest.Type.GetServices) {
             currentDevice.getDeviceInformation();
         } else if (response.getRequest().getType() == OnvifRequest.Type.GetDeviceInformation) {
+            cameraInfo.setDeviceInfo(response.getParsingUIMessage());
             currentDevice.getProfiles();
         } else if (response.getRequest().getType() == OnvifRequest.Type.GetProfiles) {
             currentDevice.getStreamURI();
@@ -142,7 +182,7 @@ public class SignInFragment extends Fragment implements OnvifListener {
             mUrl = currentDevice.getRtspURI();
             cameraInfo.setUrl(mUrl);
             Toast.makeText(getContext(), "Camera loaded", Toast.LENGTH_SHORT).show();
-            buttonLoadCamera.setEnabled(true);
+//            buttonLoadCamera.setEnabled(true);
 //            buttonLoadCamera.setText("Play Camera");
             loadProgress.setVisibility(View.INVISIBLE);
 
