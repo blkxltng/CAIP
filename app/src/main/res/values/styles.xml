@@ -14,4 +14,9 @@
         <item name="android:background">@drawable/lockscreen_background</item>
     </style>
 
+    <style name="MyButtonStyle" parent="Base.Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@drawable/btn_accent</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
 </resources>

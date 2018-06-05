@@ -174,10 +174,14 @@ public class SignInFragment extends Fragment implements OnvifListener {
             currentDevice.getDeviceInformation();
         } else if (response.getRequest().getType() == OnvifRequest.Type.GetDeviceInformation) {
             cameraInfo.setDeviceInfo(response.getParsingUIMessage());
+//            Toast.makeText(getActivity(), "Device information retrieved", Toast.LENGTH_SHORT).show();
             currentDevice.getProfiles();
         } else if (response.getRequest().getType() == OnvifRequest.Type.GetProfiles) {
+            int profilesCount = currentDevice.getMediaProfiles().size();
+//            Toast.makeText(getActivity(), profilesCount +  " profiles retrieved", Toast.LENGTH_SHORT).show();
             currentDevice.getStreamURI();
         } else if (response.getRequest().getType() == OnvifRequest.Type.GetStreamURI) {
+//            Toast.makeText(getActivity(), "Stream URI retrieved", Toast.LENGTH_SHORT).show();
             Log.d("ONVIF", "Stream URI retrieved: " + currentDevice.getRtspURI());
             mUrl = currentDevice.getRtspURI();
             cameraInfo.setUrl(mUrl);
